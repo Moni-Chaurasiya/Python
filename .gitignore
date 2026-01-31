@@ -1,2 +1,4 @@
 /.venv
 06_Project/.venv
+FastAPI/.venv
+FastAPI/__pycache__

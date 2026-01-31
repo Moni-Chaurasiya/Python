@@ -1,0 +1,18 @@
+python -m venv .venv --> install .venv in project (.venv can be any name)
+
+.venv/Scripts/activate --> for activating .venv for particular project or folder
+deactivate --> for deactivating .venv
+
+python -m pip install packageName
+pip list --> list all installed package
+
+pip freeze > requirements.txt  --> to store all package in project so that any one can install it by using command
+
+pip install -r requirements.txt
+
+pip install packageName
+pip uninstall packageName
+
+fastapi --help -> list command for fastAPI
+fastapi dev main.py  --> to run app in development mode
+
