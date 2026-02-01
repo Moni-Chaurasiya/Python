@@ -16,3 +16,12 @@ pip uninstall packageName
 fastapi --help -> list command for fastAPI
 fastapi dev main.py  --> to run app in development mode
 
+| Character | Encode as |
+| --------- | --------- |
+| `#`       | `%23`     |
+| `@`       | `%40`     |
+| `:`       | `%3A`     |
+| `/`       | `%2F`     |
+| `?`       | `%3F`     |
+
+if in url any special character is included then replace that character with Encoded --> mostly in .env url
