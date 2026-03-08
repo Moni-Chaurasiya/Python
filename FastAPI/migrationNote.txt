@@ -1,0 +1,132 @@
+______________________________________________
+*** Use of Alembic & Migrations ***
+______________________________________________
+In a FastAPI project, alembic is used for database migrations.
+It helps you track and manage changes in your database schema over time.
+
+Since you installed it and ran:
+
+pip install alembic
+alembic init -t async migrations
+
+Alembic created:
+
+migrations/
+alembic.ini
+
+Let’s understand what each thing means and why it is used.
+
+1️⃣ What is Alembic?
+
+Alembic is a database migration tool for SQLAlchemy.
+It helps when your database structure changes, for example:
+*Add a new column
+*Remove a column
+*Create a new table
+*Rename a column
+*Modify data types
+
+Instead of manually editing the database, Alembic manages versioned migrations.
+
+Example
+
+Suppose your table initially is:
+users
+-----
+id
+name
+email
+Later you update your model to add:
+
+age
+
+Instead of manually running SQL like:
+
+ALTER TABLE users ADD COLUMN age INT;
+
+Alembic will generate and apply this change automatically.
+
+2️⃣ Why Alembic is used in FastAPI projects
+FastAPI usually uses SQLAlchemy for database models.
+
+Alembic works with SQLAlchemy to:
+
+✔ Keep database schema synced with models
+✔ Track version history of DB changes
+✔ Allow rollback if something breaks
+✔ Support team collaboration
+Example:
+
+Developer A adds column
+Developer B adds table
+
+Alembic keeps migrations consistent.
+
+📁 migrations/
+
+This folder contains migration scripts.
+
+📁 migrations/versions/
+
+All database migration files will appear here.
+
+Example:
+
+versions/
+    34ab23_add_user_table.py
+    89bc21_add_email_column.py
+
+Each file represents one database change.
+
+📄 env.py
+
+This file connects Alembic to your database and models.
+
+It tells Alembic:
+
+where your database is
+
+where your SQLAlchemy models are
+
+📄 script.py.mako
+
+Template used to create migration files.
+
+Usually you don't modify it.
+
+5️⃣ What is alembic.ini
+
+This is the main configuration file.
+
+Example inside it:
+
+sqlalchemy.url = sqlite:///./test.db
+
+You change this to your database.
+
+Example for PostgreSQL:
+
+sqlalchemy.url = postgresql+asyncpg://user:password@localhost/dbname
+
+
+alembic revision --autogenerate -m "init"
+_________________________________________
+This command tells Alembic to generate a migration file automatically based on your models.
+
+What happens internally
+
+Alembic loads migrations/env.py.
+
+env.py imports your models (like User).
+
+Alembic compares:
+
+  *SQLModel / SQLAlchemy models
+
+  *Current database schema
+
+It detects differences and creates a migration file.
+
+alembic upgrade head
+_____________________
+Without this command, the migration file is created but tables are not applied to the database.

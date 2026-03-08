@@ -13,7 +13,7 @@ from src.books.routes import book_router
 
 # Import database initialization function
 from src.db.main import init_db
-
+from src.auth.routes import auth_router
 # Import logging for application logging
 import logging
 
@@ -65,4 +65,9 @@ app.include_router(
     book_router,
     prefix=f"/api/{version}/books",
     tags=["book"]
+)
+app.include_router(
+    auth_router,
+    prefix=f"/api/{version}/auth",
+    tags=["auth"]
 )
