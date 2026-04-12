@@ -53,7 +53,7 @@ async def init_db():
 
 # Dependency function to provide database sessions to routes
 # Returns AsyncSession: The type hint indicates it yields an AsyncSession
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncSession: # type: ignore
     # Create a session factory configured for async operations
     Session = sessionmaker(
         # bind: Connect the session to our async engine

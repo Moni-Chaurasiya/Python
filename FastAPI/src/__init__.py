@@ -50,7 +50,7 @@ app = FastAPI(
     # API version
     version=version,
     # Lifespan handler for startup/shutdown
-    lifespan=lifespan
+    # lifespan=lifespan
 )
 
 # Health check endpoint

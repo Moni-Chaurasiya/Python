@@ -27,6 +27,7 @@ class UserService:
         )
         try:
             new_user.password_hash = generate_password_hash(user_data_dict['password'])
+            new_user.role = "user"
         except Exception as exc:
             # if hashing fails for some reason, bubble as a 400
             from fastapi import HTTPException, status

@@ -26,7 +26,8 @@ from src.books.schemas import Book, UpdateBook, BookCreateModel
 
 # Import get_session dependency for database connections
 from src.db.main import get_session
-
+from typing import List
+from src.auth.dependencies import AccessTokenBearer, RoleChecker
 # Create an APIRouter instance for book-related endpoints
 # This allows modular routing
 book_router = APIRouter()
@@ -34,13 +35,16 @@ book_router = APIRouter()
 # Instantiate the BookService
 # This provides access to all book operations
 book_service = BookService()
+access_token_bearer = AccessTokenBearer()
+role_checker= Depends(RoleChecker(['admin','user']))
+
 # GET endpoint to retrieve all books
 # @book_router.get('/'): Defines GET route at root path
 # response_model=List[Book]: Response will be a list of Book objects
 # session=Depends(get_session): Injects database session
 # -> list: Return type hint
-@book_router.get('/', response_model=List[Book])
-async def get_all_books(session: AsyncSession = Depends(get_session)) -> list:
+@book_router.get('/', response_model=List[Book],dependencies= [role_checker])
+async def get_all_books(session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer), ) -> list:
     # Call service to get all books from database
     books = await book_service.get_all_book(session)
     # Return the list of books
@@ -49,8 +53,8 @@ async def get_all_books(session: AsyncSession = Depends(get_session)) -> list:
 # GET endpoint to retrieve a single book by UID
 # {book_uid}: Path parameter for book identifier
 # response_model=Book: Response will be a single Book object
-@book_router.get("/{book_uid}", response_model=Book)
-async def get_book_by_id(book_uid: str, session: AsyncSession = Depends(get_session)):
+@book_router.get("/{book_uid}", response_model=Book,dependencies= [role_checker])
+async def get_book_by_id(book_uid: str, session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)):
     # Try-catch for error handling
     try:
         # Commented out: Old implementation using static data
@@ -69,8 +73,8 @@ async def get_book_by_id(book_uid: str, session: AsyncSession = Depends(get_sess
 # response_model=Book: Response will be the created Book object
 # status_code=status.HTTP_200_OK: Override default 201 for creation
 # book: Book: Request body parameter (should be BookCreateModel for creation)
-@book_router.post("/", response_model=Book, status_code=status.HTTP_200_OK)
-async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get_session)) -> dict:
+@book_router.post("/", response_model=Book, status_code=status.HTTP_200_OK, dependencies= [role_checker])
+async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)) -> dict:
     # Commented out: Old implementation with static data
     # new_book= book_data.model_dump()
     # books.append(book.dict())
@@ -98,8 +102,8 @@ async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get
 # PATCH endpoint to update an existing book
 # {book_uid}: Path parameter for book to update
 # updated_book: Request body with fields to update
-@book_router.patch("/{book_uid}",response_model=Book)
-async def update_book(book_uid: str, updated_book: UpdateBook, session: AsyncSession = Depends(get_session)):
+@book_router.patch("/{book_uid}",response_model=Book, dependencies= [role_checker])
+async def update_book(book_uid: str, updated_book: UpdateBook, session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)):
     # Call service to update the book
     book = await book_service.update_book(book_uid, updated_book, session)
     # If book not found, raise 404 error
@@ -136,8 +140,8 @@ async def update_book(book_uid: str, updated_book: UpdateBook, session: AsyncSes
 
 # DELETE endpoint to remove a book
 # status_code=status.HTTP_204_NO_CONTENT: Returns 204 (no content) on success
-@book_router.delete("/{book_uid}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_book(book_uid: str, session: AsyncSession = Depends(get_session)):
+@book_router.delete("/{book_uid}", status_code=status.HTTP_204_NO_CONTENT, dependencies= [role_checker])
+async def delete_book(book_uid: str, session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)):
     # Call service to delete the book
     book = await book_service.delete_book(book_uid, session)
     # If book not found, raise 404 error

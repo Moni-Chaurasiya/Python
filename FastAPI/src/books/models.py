@@ -84,3 +84,13 @@ class Book(SQLModel, table=True):
         return f"<Book {self.title} >"
     
     
+# [
+#     "adding users",
+#     "change roles",
+#     "crud on users",
+#     "book submission",
+#     "crud on reviews",
+#     "revoking access",
+# ]
+
+# ["crud on their own book submission","crud on their reviews", "crud on their own account"]
