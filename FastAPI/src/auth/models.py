@@ -1,7 +1,11 @@
-from sqlmodel import SQLModel, Field, Column
+from typing import List, Optional
+
+from sqlmodel import Relationship, SQLModel, Field, Column
 import uuid
 from datetime import datetime, timezone
 import sqlalchemy.dialects.postgresql as pg
+
+from FastAPI.src.books import models
 
 
 class User(SQLModel, table=True):
@@ -38,6 +42,6 @@ class User(SQLModel, table=True):
             default=lambda: datetime.now(timezone.utc)
         )
     )
-
+    books: List["models.Book"] = Relationship(back_populates="user",sa_relationship_kwargs={'lazy':"selection"})
     def __repr__(self):
         return f"<User {self.username}>"

@@ -39,6 +39,15 @@ class BookService:
         # Return all results as a list
         return result.all()
 
+    async def get_user_books(self, user_uid:str, session: AsyncSession):
+        # Create a SELECT query for all Book records
+        # order_by(desc(Book.created_at)): Order by creation date, newest first
+        statement = select(Book).where(Book.user_uid==user_uid).order_by(desc(Book.created_at))
+        # Execute the query asynchronously
+        result = await session.exec(statement)
+        # Return all results as a list
+        return result.all()
+    
     # Method to get a single book by its UID
     # book_uid: String representation of the book's UUID
     # session: Database session
@@ -66,13 +75,17 @@ class BookService:
     # Method to create a new book
     # book_data: Validated data from the API request
     # session: Database session
-    async def create_book(self, book_data: BookCreateModel, session: AsyncSession):
+    async def create_book(self, book_data: BookCreateModel, user_uid:str, session: AsyncSession):
         # Convert Pydantic model to dictionary
         # model_dump(): Serializes the model to a dict
         book_data_dict = book_data.model_dump()
         # Create a new Book instance using dictionary unpacking
         # **book_data_dict: Unpacks dict as keyword arguments
         new_book = Book(**book_data_dict)
+        new_book.published_date=datetime.strptime(
+            book_data_dict["published_date"],"%Y-%m-%d",
+        )
+        new_book.user_uid=user_uid
         # Add the new book to the session (stages for insertion)
         session.add(new_book)
         # Commit the transaction to save to database

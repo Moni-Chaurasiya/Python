@@ -5,7 +5,7 @@
 # SQLModel: Base class that combines SQLAlchemy ORM with Pydantic validation
 # Field: Defines column properties like primary key, default values, etc.
 # Column: Direct SQLAlchemy column customization for advanced options
-from sqlmodel import SQLModel, Field, Column
+from sqlmodel import Relationship, SQLModel, Field, Column
 
 # Import PostgreSQL-specific data types from SQLAlchemy
 # pg: Provides PostgreSQL types like UUID, TIMESTAMP for better type safety
@@ -23,6 +23,8 @@ import uuid
 # Define the Book model as a database table
 # SQLModel: Inherits from SQLModel for ORM capabilities
 # table=True: Tells SQLModel to create this as an actual database table
+from typing import Optional
+from src.auth import models
 class Book(SQLModel, table=True):
     # __tablename__: Explicitly set the table name in the database
     __tablename__ = "books"
@@ -61,7 +63,7 @@ class Book(SQLModel, table=True):
 
     # language: Book language as string
     language: str
-
+    user_uid: Optional[uuid.UUID] =Field(default=None, foreign_key="users.uid")
     # created_at: Timestamp when the record was created
     # Field with sa_column for PostgreSQL TIMESTAMP type
     # default: Lambda function that returns current UTC time when record is created
@@ -77,6 +79,7 @@ class Book(SQLModel, table=True):
     updated_at: datetime = Field(
         sa_column=Column(pg.TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc))
     )
+    user:Optional["models.User"] = Relationship(back_populates="books")
 
     # __repr__: String representation method for debugging
     # Returns a readable string showing the book title

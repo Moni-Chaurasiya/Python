@@ -50,6 +50,15 @@ async def get_all_books(session: AsyncSession = Depends(get_session),user_detail
     # Return the list of books
     return books
 
+@book_router.get('/user/{user_uid}', response_model=List[Book],dependencies= [role_checker])
+async def get_user_book_submission(
+    user_uid:str,
+    session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer), ) -> list:
+    # Call service to get all books from database
+    books = await book_service.get_user_books(user_uid,session)
+    # Return the list of books
+    return books
+
 # GET endpoint to retrieve a single book by UID
 # {book_uid}: Path parameter for book identifier
 # response_model=Book: Response will be a single Book object
@@ -74,12 +83,13 @@ async def get_book_by_id(book_uid: str, session: AsyncSession = Depends(get_sess
 # status_code=status.HTTP_200_OK: Override default 201 for creation
 # book: Book: Request body parameter (should be BookCreateModel for creation)
 @book_router.post("/", response_model=Book, status_code=status.HTTP_200_OK, dependencies= [role_checker])
-async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)) -> dict:
+async def create_book(book: BookCreateModel, session: AsyncSession = Depends(get_session),token_details:dict=Depends(access_token_bearer)) -> dict:
     # Commented out: Old implementation with static data
     # new_book= book_data.model_dump()
     # books.append(book.dict())
     # Call service to create new book
-    new_book = await book_service.create_book(book, session)
+    user_id = token_details.get('user')['user_uid']
+    new_book = await book_service.create_book(book,user_id, session)
     # Return the created book
     return new_book
 
