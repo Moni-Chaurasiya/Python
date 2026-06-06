@@ -27,6 +27,7 @@ def verify_password(password:str,hash:str)->bool:
 def create_access_token(user_data:dict,expiry:timedelta=None, refresh:bool=False):
     payload={}
     payload['user']= user_data
+    payload['refresh'] = refresh
     # expiration should be a point in time, not a timedelta object.
     # if an explicit expiry timedelta is provided, add it to now;
     # otherwise use the default ACCESS_TOKEN_EXPIRY seconds.

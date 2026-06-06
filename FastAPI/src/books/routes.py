@@ -47,6 +47,11 @@ role_checker= Depends(RoleChecker(['admin','user']))
 async def get_all_books(session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer), ) -> list:
     # Call service to get all books from database
     books = await book_service.get_all_book(session)
+    if books is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found"
+        )
     # Return the list of books
     return books
 
@@ -56,6 +61,11 @@ async def get_user_book_submission(
     session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer), ) -> list:
     # Call service to get all books from database
     books = await book_service.get_user_books(user_uid,session)
+    if books is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Book not found"
+        )
     # Return the list of books
     return books
 
@@ -72,6 +82,11 @@ async def get_book_by_id(book_uid: str, session: AsyncSession = Depends(get_sess
         #         return book
         # Call service to get book by UID
         book = await book_service.get_book(book_uid, session)
+        if book is None:
+         raise HTTPException(
+            status_code=404,
+            detail="Book not found"
+         )
         # Return the book
         return book
     # Handle index errors (though not applicable with database)

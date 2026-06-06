@@ -38,7 +38,7 @@ class Book(SQLModel, table=True):
     # default=uuid.uuid4: Automatically generates a UUID v4 when creating new records
     uid: uuid.UUID = Field(
         sa_column=Column(
-            pg.UUID,
+            pg.UUID(as_uuid=True),
             nullable=False,
             primary_key=True,
             default=uuid.uuid4

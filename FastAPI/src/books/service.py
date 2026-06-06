@@ -82,9 +82,9 @@ class BookService:
         # Create a new Book instance using dictionary unpacking
         # **book_data_dict: Unpacks dict as keyword arguments
         new_book = Book(**book_data_dict)
-        new_book.published_date=datetime.strptime(
-            book_data_dict["published_date"],"%Y-%m-%d",
-        )
+        # new_book.published_date=datetime.strptime(
+        #     book_data_dict["published_date"],"%Y-%m-%d",
+        # )
         new_book.user_uid=user_uid
         # Add the new book to the session (stages for insertion)
         session.add(new_book)
