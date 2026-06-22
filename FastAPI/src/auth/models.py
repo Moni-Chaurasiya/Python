@@ -1,11 +1,13 @@
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from sqlmodel import Relationship, SQLModel, Field, Column
 import uuid
 from datetime import datetime, timezone
 import sqlalchemy.dialects.postgresql as pg
 
-from src.books import models
+if TYPE_CHECKING:
+    from src.books.models import Book
+    from src.reviews.models import Review
 
 
 class User(SQLModel, table=True):
@@ -42,6 +44,9 @@ class User(SQLModel, table=True):
             default=lambda: datetime.now(timezone.utc)
         )
     )
-    books: List["models.Book"] = Relationship(back_populates="user",sa_relationship_kwargs={'lazy':"selectin"})
+    books: List["Book"] = Relationship(back_populates="user", sa_relationship_kwargs={'lazy': "selectin"})
+    reviews: List["Review"] = Relationship(
+        back_populates="user", sa_relationship_kwargs={"lazy": "selectin"}
+    )
     def __repr__(self):
         return f"<User {self.username}>"

@@ -14,6 +14,7 @@ from src.books.routes import book_router
 # Import database initialization function
 from src.db.main import init_db
 from src.auth.routes import auth_router
+from src.reviews.routes import review_router
 # Import logging for application logging
 import logging
 
@@ -70,4 +71,9 @@ app.include_router(
     auth_router,
     prefix=f"/api/{version}/auth",
     tags=["auth"]
+)
+app.include_router(
+    review_router,
+    prefix= f"/api/{version}/reviews",
+    tags=["review"]
 )

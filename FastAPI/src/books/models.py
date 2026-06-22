@@ -23,8 +23,17 @@ import uuid
 # Define the Book model as a database table
 # SQLModel: Inherits from SQLModel for ORM capabilities
 # table=True: Tells SQLModel to create this as an actual database table
-from typing import Optional
-from src.auth import models
+from typing import List, Optional, TYPE_CHECKING
+
+from sqlmodel import Relationship, SQLModel, Field, Column
+import uuid
+from datetime import datetime, timezone
+import sqlalchemy.dialects.postgresql as pg
+
+if TYPE_CHECKING:
+    from src.auth.models import User
+    from src.reviews.models import Review
+
 class Book(SQLModel, table=True):
     # __tablename__: Explicitly set the table name in the database
     __tablename__ = "books"
@@ -79,8 +88,10 @@ class Book(SQLModel, table=True):
     updated_at: datetime = Field(
         sa_column=Column(pg.TIMESTAMP(timezone=True), default=lambda: datetime.now(timezone.utc))
     )
-    user:Optional["models.User"] = Relationship(back_populates="books")
-
+    user: Optional["User"] = Relationship(back_populates="books")
+    reviews: List["Review"] = Relationship(
+        back_populates="book", sa_relationship_kwargs={"lazy": "selectin"}
+    )
     # __repr__: String representation method for debugging
     # Returns a readable string showing the book title
     def __repr__(self):

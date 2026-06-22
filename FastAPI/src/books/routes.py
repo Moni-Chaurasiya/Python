@@ -19,7 +19,7 @@ from typing import List
 from src.books.service import BookService
 
 # Import schemas for request/response validation
-from src.books.schemas import Book, UpdateBook, BookCreateModel
+from src.books.schemas import Book, UpdateBook, BookCreateModel,BookDetailModel
 
 # Import commented out: Static book data (replaced by database)
 # from src.books.book_data import books
@@ -72,7 +72,7 @@ async def get_user_book_submission(
 # GET endpoint to retrieve a single book by UID
 # {book_uid}: Path parameter for book identifier
 # response_model=Book: Response will be a single Book object
-@book_router.get("/{book_uid}", response_model=Book,dependencies= [role_checker])
+@book_router.get("/{book_uid}", response_model=BookDetailModel,dependencies= [role_checker])
 async def get_book_by_id(book_uid: str, session: AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)):
     # Try-catch for error handling
     try:

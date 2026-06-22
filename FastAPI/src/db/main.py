@@ -39,8 +39,10 @@ async_engine = AsyncEngine(
 async def init_db():
     # async with: Context manager for async database connection
     async with async_engine.begin() as conn:
-        # Import the Book model here to ensure it's registered with SQLModel
+        # Import all model definitions so SQLModel metadata includes every table
+        from src.auth.models import User
         from src.books.models import Book
+        from src.reviews.models import Review
 
         # Create all tables defined in SQLModel metadata
         # This executes CREATE TABLE statements for all models

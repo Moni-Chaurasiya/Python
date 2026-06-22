@@ -8,7 +8,8 @@ from pydantic import BaseModel
 
 # Import datetime for date/time fields in schemas
 from datetime import datetime
-
+from typing import List
+from src.reviews.schemas import ReviewModel
 # Import uuid for UUID fields
 import uuid
 
@@ -34,6 +35,10 @@ class Book(BaseModel):
     created_at: datetime
     # updated_at: Last update timestamp
     updated_at: datetime
+
+
+class BookDetailModel(Book):
+    reviews:List[ReviewModel]
 
 # BookCreateModel: Schema for creating new books
 # Used for POST requests when clients want to add new books
