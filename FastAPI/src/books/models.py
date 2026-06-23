@@ -29,11 +29,12 @@ from sqlmodel import Relationship, SQLModel, Field, Column
 import uuid
 from datetime import datetime, timezone
 import sqlalchemy.dialects.postgresql as pg
-
+from src.tags.models import BookTag
 if TYPE_CHECKING:
     from src.auth.models import User
     from src.reviews.models import Review
-
+    from src.tags.models import Tag
+    
 class Book(SQLModel, table=True):
     # __tablename__: Explicitly set the table name in the database
     __tablename__ = "books"
@@ -91,6 +92,11 @@ class Book(SQLModel, table=True):
     user: Optional["User"] = Relationship(back_populates="books")
     reviews: List["Review"] = Relationship(
         back_populates="book", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    tags: List["Tag"] = Relationship(
+        link_model=BookTag,
+        back_populates="books",
+        sa_relationship_kwargs={"lazy": "selectin"},
     )
     # __repr__: String representation method for debugging
     # Returns a readable string showing the book title

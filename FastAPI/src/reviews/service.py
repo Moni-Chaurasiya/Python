@@ -6,6 +6,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from .schemas import ReviewCreateModel
 from fastapi import status
+from sqlmodel import desc, select
+import logging
 
 book_service=BookService()
 user_service=UserService()
@@ -47,5 +49,30 @@ class ReviewService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
              )
+             
+    async def get_review(self, review_uid:str, session:AsyncSession):
+        statement =select(Review).where(Review.uid== review_uid)
+        result = await session.exec(statement)
+        return result.first()
     
+    async def get_all_reviews(self,session:AsyncSession):
+        statement = select(Review).order_by(Review.created_at)
+        result =await session.exec(statement)
         
+        return result.all()
+    
+    async def delete_review_to_from_book(self,review_uid:str,user_email:str,session:AsyncSession):
+        user=await user_service.get_user_by_email(user_email,session)
+        
+        review = await self.get_review(review_uid,session)
+        
+        if not review or (review.user != user):
+            raise HTTPException(
+                detail="Cannot delete this review",
+                status_code=status.HTTP_403_FORBIDDEN
+            )
+        
+    
+        session.delete(review)
+        
+        await session.commit()

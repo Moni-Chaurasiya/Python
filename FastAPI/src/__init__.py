@@ -2,8 +2,8 @@
 # It sets up the main app, includes routers, and handles startup/shutdown events
 
 # Import FastAPI for creating the web application
-from fastapi import FastAPI
-
+from fastapi import FastAPI, status
+from fastapi.responses import JSONResponse
 # Import asynccontextmanager for managing app lifespan
 # This allows running code on startup and shutdown
 from contextlib import asynccontextmanager
@@ -15,6 +15,9 @@ from src.books.routes import book_router
 from src.db.main import init_db
 from src.auth.routes import auth_router
 from src.reviews.routes import review_router
+from src.tags.routes import tags_router
+from .errors import register_all_errors
+from .middleware import register_middleware
 # Import logging for application logging
 import logging
 
@@ -51,9 +54,11 @@ app = FastAPI(
     # API version
     version=version,
     # Lifespan handler for startup/shutdown
-    # lifespan=lifespan
+    lifespan=lifespan
 )
 
+register_all_errors(app)
+register_middleware(app)
 # Health check endpoint
 @app.get("/")
 async def health():
@@ -76,4 +81,10 @@ app.include_router(
     review_router,
     prefix= f"/api/{version}/reviews",
     tags=["review"]
+)
+
+app.include_router(
+    tags_router,
+    prefix= f"/api/{version}/tag",
+    tags=["tag"]
 )

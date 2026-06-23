@@ -43,6 +43,7 @@ async def init_db():
         from src.auth.models import User
         from src.books.models import Book
         from src.reviews.models import Review
+        from src.tags.models import Tag, BookTag
 
         # Create all tables defined in SQLModel metadata
         # This executes CREATE TABLE statements for all models
