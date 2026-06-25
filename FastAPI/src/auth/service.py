@@ -40,3 +40,11 @@ class UserService:
         # refresh so that defaults (created_at/updated_at, uid) are loaded
         await session.refresh(new_user)
         return new_user
+    
+    async def update_user(self,user:User,user_data: dict,session:AsyncSession):
+        for k, v in user_data.items():
+            setattr(user,k,v)
+        await session.commit()
+        return user
+    
+    

@@ -34,6 +34,10 @@ class UserModel(BaseModel):
     updated_at: datetime 
     books: List[Book]
     
+    
+class SignupResponse(BaseModel):
+    message: str
+    user: UserModel
 class UserBookModel(UserModel):
     books: List[Book]
     reviews:List[ReviewModel]
@@ -42,3 +46,14 @@ class UserLoginModel(BaseModel):
     email:str=Field(max_length=40)
     password:str=Field(min_length=8)
     
+class EmailModel(BaseModel):
+    address:List[str]
+    
+
+class PasswordResetRequestModel(BaseModel):
+    email: str
+
+
+class PasswordResetConfirmModel(BaseModel):
+    new_password: str
+    confirm_new_password: str
