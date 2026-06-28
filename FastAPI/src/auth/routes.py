@@ -14,6 +14,7 @@ from src.config import Config
 
 from src.errors import UserNotFound,UserAlreadyExists
 
+from src.celery import send_email
 auth_router = APIRouter()
 user_service= UserService()
 role_checker= RoleChecker(['admin','user'])
@@ -24,15 +25,17 @@ REFRESH_TOKEN_EXPIRE=2
 async def send_mail(emails:EmailModel,background_task:BackgroundTasks):
     emails = emails.address
     html = "<h1>Welcome to bookly</h1>"
-
-    message= create_message(
-        recipients=emails,
-        subject="Welcome",
-        body=html
-    )
+    subject ="Welcome to the app"
+    # message= create_message(
+    #     recipients=emails,
+    #     subject="Welcome",
+    #     body=html
+    # )
     try:
-      background_task.add_task(mail.send_message,message)
+        
     #   await mail.send_message(message)
+    #   background_task.add_task(mail.send_message,message)
+      send_email.delay(emails,subject,html)
       return {"message": "Email sent successfully"}
     except Exception as e:
       return {"error": str(e)}
